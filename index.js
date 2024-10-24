@@ -1,29 +1,41 @@
-const OMDB_KEY = '2bfc8721';
-const OMDB_URL = `http://www.omdbapi.com/`;
+import { debounce } from './helpers.js';
+import { OMDB_KEY, OMDB_URL } from './config.js';
 
 const fetchData = async (searchTerm) => {
-  const response = await axios.get(OMDB_URL, {
-    params: {
-      apikey: OMDB_KEY,
-      s: searchTerm,
-    },
-  });
-  console.log(response.data);
+  try {
+    const response = await axios.get(OMDB_URL, {
+      params: {
+        apikey: OMDB_KEY,
+        s: searchTerm,
+      },
+    });
+    if (response.data.Error) {
+      return [];
+    }
+    return response.data.Search;
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 const input = document.querySelector('input');
 
-// This function basically allows us to delay any other function we pass in as an argument
-const debounce = (func, delay = 1000) => {
-  let timeoutId;
-  return (...args) => {
-    if (timeoutId) clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => func.apply(null, args), delay);
-  };
-};
+const onInput = async (e) => {
+  try {
+    const movies = await fetchData(e.target.value);
+    console.log(movies);
+    movies.forEach((mov) => {
+      const div = document.createElement('div');
 
-const onInput = (e) => {
-  fetchData(e.target.value), 1000;
+      div.innerHTML = `
+    <img src="${mov.Poster}"/>
+    <h1>${mov.Title}</h1>
+    `;
+      document.querySelector('#target').appendChild(div);
+    });
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 input.addEventListener('input', debounce(onInput, 750));
