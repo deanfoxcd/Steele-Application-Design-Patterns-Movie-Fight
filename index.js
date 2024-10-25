@@ -1,37 +1,39 @@
-import { debounce } from './helpers.js';
-import { OMDB_KEY, OMDB_URL } from './config.js';
-
-const fetchData = async (searchTerm) => {
-  try {
-    const response = await axios.get(OMDB_URL, {
-      params: {
-        apikey: OMDB_KEY,
-        s: searchTerm,
-      },
-    });
-    if (response.data.Error) {
-      return [];
-    }
-    return response.data.Search;
-  } catch (err) {
-    console.error(err);
-  }
-};
+import { debounce, onMovieSelect, fetchData } from './helpers.js';
+import { root, movieTemplate } from './markup.js';
 
 const input = document.querySelector('input');
+const dropdown = document.querySelector('.dropdown');
+const resultsBlock = document.querySelector('.dropdown-content');
 
 const onInput = async (e) => {
   try {
     const movies = await fetchData(e.target.value);
     console.log(movies);
-    movies.forEach((mov) => {
-      const div = document.createElement('div');
 
-      div.innerHTML = `
-    <img src="${mov.Poster}"/>
-    <h1>${mov.Title}</h1>
+    if (!movies.length) {
+      dropdown.classList.remove('is-active');
+      return;
+    }
+
+    resultsBlock.innerHTML = '';
+    dropdown.classList.add('is-active');
+
+    movies.forEach((mov) => {
+      const option = document.createElement('a');
+      const imgSrc = mov.Poster === 'N/A' ? '' : mov.Poster;
+
+      option.classList.add('dropdown-item');
+      option.innerHTML = `
+    <img src="${imgSrc}"/>
+    ${mov.Title}
     `;
-      document.querySelector('#target').appendChild(div);
+
+      option.addEventListener('click', () => {
+        input.value = mov.Title;
+        dropdown.classList.remove('is-active');
+        onMovieSelect(mov.imdbID);
+      });
+      resultsBlock.appendChild(option);
     });
   } catch (err) {
     console.error(err);
@@ -39,3 +41,6 @@ const onInput = async (e) => {
 };
 
 input.addEventListener('input', debounce(onInput, 750));
+document.addEventListener('click', (e) => {
+  if (!root.contains(e.target)) dropdown.classList.remove('is-active');
+});
