@@ -18,16 +18,28 @@ export const fetchData = async (searchTerm) => {
   }
 };
 
-export const onMovieSelect = async function (movieId) {
+let movieLeft;
+let movieRight;
+export const onMovieSelect = async function (movieId, summary, position) {
   const selectedMovie = await axios.get(OMDB_URL, {
     params: {
       apikey: OMDB_KEY,
       i: movieId,
     },
   });
-  document.querySelector('#summary').innerHTML = movieTemplate(
-    selectedMovie.data
-  );
+  summary.innerHTML = movieTemplate(selectedMovie.data);
+
+  position === 'left'
+    ? (movieLeft = selectedMovie.data)
+    : (movieRight = selectedMovie.data);
+
+  if (movieLeft && movieRight) {
+    runComparison(movieLeft, movieRight);
+  }
+};
+
+const runComparison = function (leftMovie, rightMovie) {
+  console.log(leftMovie, rightMovie);
 };
 
 // This function basically allows us to delay any other function we pass in as an argument

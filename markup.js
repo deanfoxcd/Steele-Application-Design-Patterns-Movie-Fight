@@ -1,7 +1,8 @@
 export const root = document.querySelector('.autocomplete');
-root.innerHTML = `
+
+export const dropdownRender = `
 <label>
-<b>Search For a Movie</b>
+<b>Search</b>
 </label>
   <input class="input" />
   <div class="dropdown">
@@ -11,6 +12,19 @@ root.innerHTML = `
   </div>
 </label>
 `;
+
+// root.innerHTML = `
+// <label>
+// <b>Search For a Movie</b>
+// </label>
+//   <input class="input" />
+//   <div class="dropdown">
+//     <div class="dropdown-menu">
+//       <div class="dropdown-content results"></div>
+//     </div>
+//   </div>
+// </label>
+// `;
 
 export const movieTemplate = function (movieDetails) {
   return `
