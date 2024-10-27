@@ -38,8 +38,26 @@ export const onMovieSelect = async function (movieId, summary, position) {
   }
 };
 
-const runComparison = function (leftMovie, rightMovie) {
-  console.log(leftMovie, rightMovie);
+const runComparison = function () {
+  const leftSummary = document.querySelectorAll('#left-summary .notification');
+  const rightSummary = document.querySelectorAll(
+    '#right-summary .notification'
+  );
+
+  leftSummary.forEach((leftStat, i) => {
+    const rightStat = rightSummary[i];
+
+    const leftValue = parseFloat(leftStat.dataset.value);
+    const rightValue = parseFloat(rightStat.dataset.value);
+
+    if (leftValue > rightValue) {
+      leftStat.classList.remove('is-primary');
+      leftStat.classList.add('is-warning');
+    } else {
+      rightStat.classList.remove('is-primary');
+      rightStat.classList.add('is-warning');
+    }
+  });
 };
 
 // This function basically allows us to delay any other function we pass in as an argument
